@@ -240,7 +240,7 @@ export const FlexLayout = createLayout<FlexLayoutProps>(
     if (!hasContainerSize) {
       if (alignItems === 'center' && !isRow) {
         // For column layout, center items horizontally
-        const maxWidth = Math.max(...childBounds.map(bounds => bounds.width));
+        const maxWidth = Math.max(...childBounds.map((bounds) => bounds.width));
         layoutedChildren.forEach((child, index) => {
           const bounds = childBounds[index];
           const centerOffset = (maxWidth - bounds.width) / 2;
@@ -250,7 +250,9 @@ export const FlexLayout = createLayout<FlexLayoutProps>(
         });
       } else if (alignItems === 'center' && isRow) {
         // For row layout, center items vertically
-        const maxHeight = Math.max(...childBounds.map(bounds => bounds.height));
+        const maxHeight = Math.max(
+          ...childBounds.map((bounds) => bounds.height),
+        );
         layoutedChildren.forEach((child, index) => {
           const bounds = childBounds[index];
           const centerOffset = (maxHeight - bounds.height) / 2;
@@ -259,7 +261,7 @@ export const FlexLayout = createLayout<FlexLayoutProps>(
           layoutedChildren[index] = cloneElement(child, newProps);
         });
       }
-      
+
       const finalBounds = getElementsBounds(layoutedChildren);
       props.x ??= finalBounds.x;
       props.y ??= finalBounds.y;
