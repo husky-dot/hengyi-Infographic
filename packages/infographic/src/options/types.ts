@@ -1,5 +1,5 @@
 import type { ComponentType } from '@antv/infographic-jsx';
-import type { ItemRegistration, StructureRegistration } from '../generator';
+import type { ItemRegistration, StructureRegistration } from '../designs';
 import type { Data, Padding, ThemeConfig } from '../types';
 
 export interface InfographicOptions {
