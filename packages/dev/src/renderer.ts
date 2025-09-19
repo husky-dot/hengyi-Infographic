@@ -8,9 +8,9 @@ const infographic = new Infographic({
   height: 600,
   padding: 20,
   design: {
-    structure: 'list-column',
+    structure: { type: 'list-column', gap: 5 },
     title: 'default',
-    item: { type: 'done-list', width: 300, height: 100, gap: 20 },
+    item: { type: 'pyramid', positionH: 'flipped' },
   },
   data: {
     title: 'AntV Infographic',

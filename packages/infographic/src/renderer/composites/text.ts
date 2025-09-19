@@ -1,7 +1,8 @@
 import type { Bounds } from '@antv/infographic-jsx';
 import get from 'lodash-es/get';
 import { ParsedInfographicOptions } from '../../options';
-import type { DynamicAttributes, TextAttributes } from '../../types';
+import type { DynamicAttributes } from '../../themes';
+import type { TextAttributes } from '../../types';
 import {
   createTextElement,
   getAttributes,

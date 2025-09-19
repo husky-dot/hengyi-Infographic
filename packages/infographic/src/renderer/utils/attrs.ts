@@ -1,4 +1,4 @@
-import type { DynamicAttributes, DynamicItemAttribute } from '../../types';
+import type { DynamicAttributes, DynamicItemAttribute } from '../../themes';
 import { hasColor } from '../../utils';
 
 export function parseDynamicAttributes<T extends object>(

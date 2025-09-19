@@ -1,11 +1,7 @@
 import { ParsedInfographicOptions } from '../../options';
 import { loadResource, ResourceConfig } from '../../resource';
-import type {
-  DynamicAttributes,
-  DynamicItemAttribute,
-  IconAttributes,
-  IconElement,
-} from '../../types';
+import type { DynamicAttributes, DynamicItemAttribute } from '../../themes';
+import type { IconAttributes, IconElement } from '../../types';
 import { createIconElement, getAttributes } from '../../utils';
 import { parseDynamicAttributes } from '../utils';
 

@@ -1,4 +1,5 @@
 import { DoneList } from './DoneList';
+import { Pyramid } from './Pyramid';
 import { SimpleItem } from './SimpleItem';
 import type { Item } from './types';
 
@@ -14,3 +15,4 @@ export function getItem(type: string): Item | undefined {
 
 registerItem('done-list', { component: DoneList });
 registerItem('simple', { component: SimpleItem });
+registerItem('pyramid', { component: Pyramid });
