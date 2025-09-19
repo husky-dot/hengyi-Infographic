@@ -6,6 +6,7 @@ import {
   TemplateOptions,
   Title,
 } from '../designs';
+import { getPaletteColor } from '../renderer';
 import { getTheme, type ThemeConfig } from '../themes';
 import { parsePadding } from '../utils';
 import type { InfographicOptions, ParsedInfographicOptions } from './types';
@@ -38,7 +39,7 @@ export function parseOptions(
     container: parsedContainer as HTMLElement,
     padding: parsePadding(padding),
     template,
-    design: parseDesign({ ...parsedTemplate, ...design }),
+    design: parseDesign({ ...parsedTemplate, ...design }, options),
     theme,
     themeConfig: parseTheme(theme, themeConfig),
   };
@@ -52,12 +53,13 @@ function normalizeWithType<T extends { type: string }>(obj: string | T): T {
 
 function parseDesign(
   config: InfographicOptions['design'],
+  options: InfographicOptions,
 ): ParsedTemplateOptions {
   const { structure, title, item } = config || {};
   return {
     structure: parseDesignStructure(structure),
     title: parseDesignTitle(title),
-    item: parseDesignItem(item),
+    item: parseDesignItem(item, options),
   };
 }
 
@@ -86,15 +88,24 @@ function parseDesignTitle(
 
 function parseDesignItem(
   config: TemplateOptions['item'],
+  options: InfographicOptions,
 ): ParsedTemplateOptions['item'] {
   if (!config) throw new Error('Item is required in design or template');
   const { type, ...userProps } = normalizeWithType(config);
   const item = getItem(type);
   if (!item) throw new Error(`Item ${type} not found`);
-  const { component, options } = item;
+  const { component, options: itemOptions } = item;
   return {
-    component: (props) => component({ ...props, ...userProps }),
-    options,
+    component: (props) => {
+      const { indexes } = props;
+      const primaryColor = getPaletteColor(
+        options.themeConfig?.palette,
+        indexes,
+        options.data?.items?.length,
+      );
+      return component({ ...props, primaryColor, ...userProps });
+    },
+    options: itemOptions,
   };
 }
 

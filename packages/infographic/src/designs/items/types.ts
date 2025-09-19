@@ -5,10 +5,11 @@ export interface BaseItemProps {
   x?: number;
   y?: number;
   id?: string;
-  
+
   indexes: number[];
   data: Data;
   datum: Data['items'][number];
+  primaryColor?: string;
   positionH?: 'normal' | 'center' | 'flipped';
   positionV?: 'normal' | 'center' | 'flipped';
   [key: string]: any;
