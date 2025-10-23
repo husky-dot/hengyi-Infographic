@@ -437,6 +437,83 @@ const BUILT_IN_TEMPLATES: Record<string, TemplateOptions> = {
       items: [{ type: 'quarter-simple-card' }],
     },
   },
+  'sequence-horizontal-zigzag-simple-illus': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-horizontal-zigzag' },
+      items: [{ type: 'simple-illus' }],
+    },
+  },
+  'sequence-horizontal-zigzag-horizontal-icon-line': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-horizontal-zigzag' },
+      items: [{ type: 'horizontal-icon-line' }],
+    },
+  },
+  'sequence-horizontal-zigzag-plain-text': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-horizontal-zigzag' },
+      items: [{ type: 'plain-text' }],
+    },
+  },
+  'sequence-horizontal-zigzag-simple-horizontal-arrow': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-horizontal-zigzag' },
+      items: [{ type: 'simple-horizontal-arrow' }],
+    },
+  },
+  'sequence-horizontal-zigzag-simple': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-horizontal-zigzag' },
+      items: [{ type: 'simple' }],
+    },
+  },
+  'list-row-simple-illus': {
+    design: {
+      title: 'default',
+      structure: { type: 'list-row' },
+      items: [{ type: 'simple-illus' }],
+    },
+  },
+  'quadrant-simple-illus': {
+    design: {
+      title: 'default',
+      structure: { type: 'quadrant' },
+      items: [{ type: 'simple-illus' }],
+    },
+  },
+  'sequence-color-snake-steps-simple-illus': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-color-snake-steps' },
+      items: [{ type: 'simple-illus' }],
+    },
+  },
+  'sequence-snake-steps-simple-illus': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-snake-steps' },
+      items: [{ type: 'simple-illus' }],
+    },
+  },
+  'sequence-steps-simple-illus': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-steps' },
+      items: [{ type: 'simple-illus' }],
+    },
+  },
+  'sequence-timeline-simple-illus': {
+    design: {
+      title: 'default',
+      structure: { type: 'sequence-timeline' },
+      items: [{ type: 'simple-illus' }],
+    },
+  },
 };
 
 Object.entries(BUILT_IN_TEMPLATES).forEach(([name, options]) => {

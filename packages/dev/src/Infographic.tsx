@@ -9,7 +9,10 @@ import { getAsset } from './get-asset';
 
 registerResourceLoader(async (config) => {
   const { data } = config;
-  const str = await getAsset('icon', data);
+  const type = data.startsWith('illus:') ? 'illustration' : 'icon';
+  const _data = data.replace(/^illus:|^icon:/, '');
+
+  const str = await getAsset(type, _data);
   return loadSVGResource(str);
 });
 

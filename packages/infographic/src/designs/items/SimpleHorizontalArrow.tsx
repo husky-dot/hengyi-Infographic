@@ -23,10 +23,17 @@ export interface SimpleHorizontalArrowProps extends BaseItemProps {
 export const SimpleHorizontalArrow: ComponentType<
   SimpleHorizontalArrowProps
 > = (props) => {
-  const [{ indexes, datum, width = 140, themeColors, flipped }, restProps] =
-    getItemProps(props, ['width', 'flipped']);
-
-  const positionV = indexes[0] % 2 === (flipped ? 0 : 1) ? 'normal' : 'flipped';
+  const [
+    {
+      indexes,
+      datum,
+      width = 140,
+      themeColors,
+      flipped,
+      positionV = indexes[0] % 2 === (flipped ? 0 : 1) ? 'normal' : 'flipped',
+    },
+    restProps,
+  ] = getItemProps(props, ['width', 'flipped']);
 
   const textAlignVertical = positionV === 'normal' ? 'bottom' : 'top';
   const label = (

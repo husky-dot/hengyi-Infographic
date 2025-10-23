@@ -15,6 +15,7 @@ export * from './relation-circle';
 export * from './relation-network';
 export * from './sequence-ascending-steps';
 export * from './sequence-color-snake-steps';
+export * from './sequence-horizontal-zigzag';
 export * from './sequence-roadmap-vertical';
 export * from './sequence-snake-steps';
 export * from './sequence-steps';

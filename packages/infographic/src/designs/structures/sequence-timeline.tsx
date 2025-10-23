@@ -1,6 +1,7 @@
 /** @jsxImportSource @antv/infographic-jsx */
 import type { ComponentType, JSXElement } from '@antv/infographic-jsx';
 import {
+  Defs,
   Ellipse,
   getElementBounds,
   Group,
@@ -9,7 +10,7 @@ import {
 } from '@antv/infographic-jsx';
 import { BtnAdd, BtnRemove, BtnsGroup, ItemsGroup } from '../components';
 import { FlexLayout } from '../layouts';
-import { getColorPrimary, getPaletteColors } from '../utils';
+import { getColorPrimary, getPaletteColor, getPaletteColors } from '../utils';
 import { registerStructure } from './registry';
 import type { BaseStructureProps } from './types';
 
@@ -50,14 +51,45 @@ export const SequenceTimeline: ComponentType<SequenceTimelineProps> = (
       nodeRadius;
     const continuousLinePath = `M ${timelineX} ${firstNodeY} L ${timelineX} ${lastNodeY}`;
 
+    const linearGradientId = 'gradient-timeline-line';
+    const totalHeight = lastNodeY - firstNodeY;
+
+    // Generate gradient stops for each item
+    const gradientStops = items.map((_, index) => {
+      const nodeY = index * (itemBounds.height + gap) + itemBounds.height / 2;
+      const offset = ((nodeY - firstNodeY) / totalHeight) * 100;
+      const color = getPaletteColor(options, [index]);
+      return (
+        <stop
+          key={index}
+          offset={`${offset}%`}
+          stopColor={color || colorPrimary}
+        />
+      );
+    });
+
     decorElements.push(
-      <Path
-        d={continuousLinePath}
-        stroke={colorPrimary}
-        strokeWidth={2}
-        width={1}
-        height={lastNodeY - firstNodeY}
-      />,
+      <>
+        <Defs>
+          <linearGradient
+            id={linearGradientId}
+            x1={timelineX}
+            y1={firstNodeY}
+            x2={timelineX}
+            y2={lastNodeY}
+            gradientUnits="userSpaceOnUse"
+          >
+            {gradientStops}
+          </linearGradient>
+        </Defs>
+        <Path
+          d={continuousLinePath}
+          stroke={`url(#${linearGradientId})`}
+          strokeWidth={2}
+          width={1}
+          height={lastNodeY - firstNodeY}
+        />
+      </>,
     );
   }
 

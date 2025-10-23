@@ -10,6 +10,7 @@ export const LIST_DATA: Data = {
       desc: '产品优势详细说明产品优势详细说明',
       value: 80,
       time: '2018',
+      illus: 'illus:english-teacher-bro-8693',
     },
     {
       icon: 'antenna-bars-5_v1_lineal',
@@ -17,6 +18,7 @@ export const LIST_DATA: Data = {
       desc: '产品优势详细说明产品优势详细说明',
       value: 70,
       time: '2019',
+      illus: 'illus:teacher-student-rafiki-9049',
     },
     {
       icon: 'achievment-050_v1_lineal',
@@ -24,6 +26,7 @@ export const LIST_DATA: Data = {
       desc: '产品优势详细说明产品优势详细说明',
       value: 90,
       time: '2020',
+      illus: 'illus:mathematics-cuate-7503',
     },
     {
       icon: '3d-file-015_v1_lineal',
@@ -31,6 +34,7 @@ export const LIST_DATA: Data = {
       desc: '产品优势详细说明产品优势详细说明',
       value: 60,
       time: '2021',
+      illus: 'illus:teacher-student-rafiki-9049',
     },
     {
       icon: 'activities-037_v1_lineal',
@@ -38,6 +42,7 @@ export const LIST_DATA: Data = {
       desc: '产品优势详细说明产品优势详细说明',
       value: 80,
       time: '2022',
+      illus: 'illus:english-teacher-bro-8693',
     },
     {
       icon: 'account-book-025_v1_lineal',
@@ -45,6 +50,7 @@ export const LIST_DATA: Data = {
       desc: '产品优势详细说明产品优势详细说明',
       value: 90,
       time: '2023',
+      illus: 'illus:mathematics-cuate-7503',
     },
     {
       icon: 'account-book-025_v1_lineal',
@@ -52,6 +58,7 @@ export const LIST_DATA: Data = {
       desc: '产品优势详细说明产品优势详细说明',
       value: 97,
       time: '2024',
+      illus: 'illus:english-teacher-bro-8693',
     },
   ],
 };

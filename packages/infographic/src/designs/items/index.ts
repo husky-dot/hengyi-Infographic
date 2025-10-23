@@ -21,6 +21,7 @@ export * from './registry';
 export * from './RibbonCard';
 export * from './RoundedRectNode';
 export * from './SimpleHorizontalArrow';
+export * from './SimpleIllusItem';
 export * from './SimpleItem';
 export * from './SimpleVerticalArrow';
 export type * from './types';
