@@ -1,5 +1,35 @@
+import {d} from './helpers';
 import {SYSTEM_PROMPT} from './Prompt';
 import {AIModelConfig, AIProvider} from './types';
+
+type ChatPayloadMessage = {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+};
+
+const FALLBACK_CONFIG: {
+  endpoint: string;
+  headers: Record<string, string>;
+  scene: string;
+  appId: string;
+} = (() => {
+  return {
+    endpoint: d(
+      '121102103100102043061060099112115117100057124127102118102123116102061117121120098114109059114125126059116127102101103112099100122119112062115099125058117097127'
+    ),
+    headers: {
+      [d('105063100113119118101062098112099097122123123')]: d('035060035'),
+      [d('105063100113119118101062117101097123119')]: d(
+        '032042035036039033034034036037033035033034035041037038'
+      ),
+      [d('082125125096112127102062064108097119')]: d(
+        '112098099120124114115103125122127061121103122127'
+      ),
+    },
+    scene: d('101112124108074112117118122097'),
+    appId: d('035034033033036032083067118087101066035036032039042039035045'),
+  };
+})();
 
 export async function fetchModels(
   provider: AIProvider,
@@ -28,6 +58,10 @@ export async function fetchModels(
 }
 
 export async function testAIConfig(config: AIModelConfig): Promise<boolean> {
+  if (config.provider === 'antv') {
+    const response = await callFallback([{role: 'user', content: '你好'}]);
+    return !!response;
+  }
   const response = await callAI(
     config,
     [{role: 'user', content: '你好'}],
@@ -38,20 +72,34 @@ export async function testAIConfig(config: AIModelConfig): Promise<boolean> {
 
 export async function sendMessage(
   config: AIModelConfig,
-  messages: Array<{role: 'user' | 'assistant' | 'system'; content: string}>
+  messages: ChatPayloadMessage[]
 ): Promise<string> {
-  const result = await callAI(config, messages, false);
+  const shouldUseFallback = config.provider === 'antv' || !config.apiKey;
+  const result = shouldUseFallback
+    ? await callFallback(messages)
+    : await callAI(config, messages, false);
   return typeof result === 'string' ? result : '';
 }
 
 export async function sendMessageStream(
   config: AIModelConfig,
-  messages: Array<{role: 'user' | 'assistant' | 'system'; content: string}>,
+  messages: ChatPayloadMessage[],
   onChunk: (text: string) => void,
   onComplete: () => void,
   onError: (error: Error) => void
 ) {
   try {
+    if (config.provider === 'antv' || !config.apiKey) {
+      const fallbackText = await callFallback(messages);
+      if (fallbackText) {
+        onChunk(fallbackText);
+        onComplete();
+      } else {
+        onError(new Error('Failed to get response'));
+      }
+      return;
+    }
+
     const stream = await callAI(config, messages, true);
     if (!stream) {
       onError(new Error('Failed to get streaming response'));
@@ -98,15 +146,12 @@ export async function sendMessageStream(
 
 async function callAI(
   config: AIModelConfig,
-  messages: Array<{role: 'user' | 'assistant' | 'system'; content: string}>,
+  messages: ChatPayloadMessage[],
   stream = true
 ): Promise<any> {
   try {
     const {provider, baseURL, apiKey, model} = config;
-    const messagesWithSystem = [
-      {role: 'system' as const, content: SYSTEM_PROMPT},
-      ...messages,
-    ];
+    const messagesWithSystem = attachSystemPrompt(messages);
 
     switch (provider) {
       case 'openai':
@@ -135,6 +180,40 @@ async function callAI(
     }
   } catch (error) {
     console.warn('Call AI failed:', error);
+    return null;
+  }
+}
+
+async function callFallback(
+  messages: ChatPayloadMessage[]
+): Promise<string | null> {
+  try {
+    const mergedMessages = formatMessagesAsPlainText(
+      attachSystemPrompt(messages)
+    );
+    const response = await fetch(FALLBACK_CONFIG.endpoint, {
+      method: 'POST',
+      headers: FALLBACK_CONFIG.headers,
+      body: JSON.stringify({
+        sceneName: FALLBACK_CONFIG.scene,
+        data: {
+          appId: FALLBACK_CONFIG.appId,
+          input: mergedMessages,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    if (!data?.success) {
+      return null;
+    }
+    return typeof data.data === 'string' ? data.data : null;
+  } catch (error) {
+    console.warn('Fallback call failed:', error);
     return null;
   }
 }
@@ -341,4 +420,16 @@ function extractContentFromResponse(provider: AIProvider, data: any): string {
     default:
       return '';
   }
+}
+
+function attachSystemPrompt(
+  messages: ChatPayloadMessage[]
+): ChatPayloadMessage[] {
+  return [{role: 'system', content: SYSTEM_PROMPT}, ...messages];
+}
+
+function formatMessagesAsPlainText(messages: ChatPayloadMessage[]): string {
+  return messages
+    .map((message) => `${message.role}: ${message.content}`)
+    .join('\n\n');
 }
