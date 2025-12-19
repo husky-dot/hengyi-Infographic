@@ -10,6 +10,35 @@ const COMMON_OPTIONS = {
   padding: 20,
 } as const;
 
+const HIERARCHY_TREE_STRUCTURES = [
+  'tech-style',
+  'dashed-line',
+  'distributed-origin',
+  'curved-line',
+  'dashed-arrow',
+] as const;
+const HIERARCHY_TREE_ITEMS = [
+  'capsule-item',
+  'rounded-rect-node',
+  'compact-card',
+  'badge-card',
+  'ribbon-card',
+] as const;
+const HIERARCHY_TREE_ORIENTATIONS = ['bt', 'lr', 'rl'] as const;
+
+const buildHierarchyTreeOrientationEntries = (): [string, any][] =>
+  HIERARCHY_TREE_ORIENTATIONS.flatMap((ori) =>
+    HIERARCHY_TREE_STRUCTURES.flatMap((structure) =>
+      HIERARCHY_TREE_ITEMS.map(
+        (item) =>
+          [`hierarchy-tree-${ori}-${structure}-${item}`, DATASET.HIERARCHY] as [
+            string,
+            any
+          ]
+      )
+    )
+  );
+
 // 2. 定义 Premium 模版顺序 (保持不变)
 const PREMIUM_TEMPLATE_KEYS = [
   'sequence-zigzag-steps-underline-text',
@@ -162,6 +191,12 @@ const TEMPLATE_ENTRIES: [string, any][] = [
   ['hierarchy-tree-distributed-origin-ribbon-card', DATASET.HIERARCHY],
   ['hierarchy-tree-dashed-arrow-ribbon-card', DATASET.HIERARCHY],
   ['hierarchy-tree-curved-line-ribbon-card', DATASET.HIERARCHY],
+  ...buildHierarchyTreeOrientationEntries(),
+  ['sequence-stairs-front-pill-badge', DATASET.LIST],
+  ['sequence-stairs-front-compact-card', DATASET.LIST],
+  ['sequence-stairs-front-simple', DATASET.LIST],
+  ['chart-wordcloud', DATASET.WORD_CLOUD],
+  ['chart-wordcloud-rotate', DATASET.WORD_CLOUD],
 ];
 
 // 4. 构建完整对象列表
