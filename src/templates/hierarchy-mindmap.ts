@@ -7,7 +7,7 @@ import type {
 const BRANCH_GRADIENT: Partial<HierarchyMindmapProps> = {
   edgeType: 'curved',
   edgeColorMode: 'gradient',
-  edgeWidth: 2,
+  edgeWidth: 1,
   colorMode: 'branch',
   levelGap: 80,
   nodeGap: 18,
@@ -15,7 +15,7 @@ const BRANCH_GRADIENT: Partial<HierarchyMindmapProps> = {
 
 const LEVEL_GRADIENT: Partial<HierarchyMindmapProps> = {
   edgeType: 'curved',
-  edgeWidth: 2,
+  edgeWidth: 1,
   edgeColorMode: 'gradient',
   colorMode: 'level',
   levelGap: 80,

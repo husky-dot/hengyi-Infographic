@@ -41,7 +41,7 @@ const generateTextColor = (bgColor: Color, isDarkMode: boolean): string => {
   if (isDarkMode) {
     return '#ffffff';
   }
-  const darkText = parse('#262626')!;
+  const darkText = parse('#333333')!;
   const contrast = wcagContrast(darkText, bgColor);
   return contrast >= 7 ? formatHex(darkText) : '#000000';
 };
@@ -57,7 +57,7 @@ const generatePrimaryTextColor = (
   isDarkMode: boolean,
 ): string => {
   const bg = parse(colorPrimaryBg)!;
-  const darkText = parse('#262626')!;
+  const darkText = parse('#333333')!;
   const lightText = parse('#ffffff')!;
 
   const darkContrast = wcagContrast(darkText, bg);

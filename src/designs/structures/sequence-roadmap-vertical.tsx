@@ -1,4 +1,7 @@
+import tinycolor from 'tinycolor2';
 import {
+  Defs,
+  Ellipse,
   getElementBounds,
   Group,
   Path,
@@ -6,7 +9,7 @@ import {
   type ComponentType,
   type JSXElement,
 } from '../../jsx';
-import { ItemIconCircle } from '../components';
+import { ItemIcon } from '../components';
 import { Triangle } from '../decorations';
 import { FlexLayout } from '../layouts';
 import { getPaletteColor } from '../utils';
@@ -24,8 +27,8 @@ const CONFIG = {
   roadWidth: 24,
   outerRadius: 60,
   rowWidth: 400,
-  spacing: 30,
-  colorDefault: '#666666',
+  spacing: 80,
+  colorDefault: '#EBEBEB',
 };
 
 const moveTo = (x: number, y: number) => `M ${x} ${y}`;
@@ -82,16 +85,52 @@ function renderItemRow({
       ? 'normal'
       : 'flipped';
 
-  return {
-    icon: (
-      <ItemIconCircle
+  const gradientId = `roadmap-icon-gradient-${i}-${tinycolor(color).toHex()}`;
+  const endColor = tinycolor(color).lighten(20).setAlpha(0.6).toRgbString();
+
+  // 圆形内最大内切正方形的边长 = 圆的直径 / √2
+  const innerSize = (iconSize / Math.SQRT2) * 0.9;
+  const offset = (iconSize - innerSize) / 2;
+
+  const iconGroup = (
+    <Group
+      x={iconX}
+      y={iconY}
+      width={iconSize}
+      height={iconSize}
+      data-element-type="item-icon-group"
+    >
+      <Defs>
+        <linearGradient
+          id={gradientId}
+          x1="23.5%"
+          y1="7.6%"
+          x2="76.5%"
+          y2="92.4%"
+        >
+          <stop offset="16%" stopColor={color} />
+          <stop offset="87%" stopColor={endColor} />
+        </linearGradient>
+      </Defs>
+      <Ellipse
+        width={iconSize}
+        height={iconSize}
+        fill={`url(#${gradientId})`}
+        opacity={0.13}
+        data-element-type="shape"
+      />
+      <ItemIcon
         indexes={[i]}
-        x={iconX}
-        y={iconY}
-        size={iconSize}
+        x={offset}
+        y={offset}
+        size={innerSize}
         fill={color}
       />
-    ),
+    </Group>
+  );
+
+  return {
+    icon: iconGroup,
     label: (
       <Text
         width={40}
@@ -117,18 +156,36 @@ function renderItemRow({
   };
 }
 
-function buildDecorations({ direction, x, y, color, elements }: any) {
+function buildDecorations({ direction, x, y, color, elements, spacing, i }: any) {
   const isLeft = direction === 'left';
+  const gradientId = `roadmap-triangle-gradient-${i}-${tinycolor(color).toHex()}`;
+  const endColor = tinycolor(color).lighten(20).toRgbString();
+
   elements.push(
-    <Triangle
-      x={isLeft ? x.x6 + 10 : x.x1 - 20}
-      y={y.y3 - 5}
-      width={10}
-      height={8}
-      rotation={isLeft ? 90 : -90}
-      colorPrimary={color}
-      data-element-type="shape"
-    />,
+    <Group>
+      <Defs>
+        <linearGradient
+          id={gradientId}
+          x1="50%"
+          y1="0%"
+          x2="50%"
+          y2="100%"
+        >
+          <stop offset="0%" stopColor={color} />
+          <stop offset="99%" stopColor={endColor} />
+        </linearGradient>
+      </Defs>
+      <Triangle
+        x={isLeft ? x.x6 + spacing / 2 - 5 : x.x1 - spacing / 2 - 5}
+        y={y.y3 - 5}
+        width={10}
+        height={8}
+        rotation={isLeft ? 90 : -90}
+        colorPrimary={`url(#${gradientId})`}
+        strokeWidth={6.18}
+        data-element-type="shape"
+      />
+    </Group>,
   );
 }
 
@@ -261,6 +318,7 @@ export const SequenceRoadmapVertical: ComponentType<
       y,
       color,
       elements: decorationElements,
+      spacing,
     });
 
     // 元素

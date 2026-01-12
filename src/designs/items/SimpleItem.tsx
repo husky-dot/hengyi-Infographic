@@ -1,4 +1,4 @@
-import { ComponentType, getElementBounds, Group } from '../../jsx';
+import { ComponentType, getElementBounds, Group, Rect } from '../../jsx';
 import { ItemDesc, ItemIcon, ItemIconCircle, ItemLabel } from '../components';
 import { FlexLayout } from '../layouts';
 import { getItemProps } from '../utils';
@@ -73,6 +73,12 @@ export const SimpleItem: ComponentType<SimpleItemProps> = (props) => {
     </ItemLabel>
   );
   const labelBounds = getElementBounds(labelContent);
+  const measuredText = getElementBounds(
+    <ItemLabel indexes={indexes}>{label}</ItemLabel>,
+  );
+  const textRealWidth = measuredText.width/2;
+  const underlineHeight = 3;
+
   const iconContent = showIcon ? (
     iconType === 'circle' ? (
       <ItemIconCircle
@@ -121,11 +127,26 @@ export const SimpleItem: ComponentType<SimpleItemProps> = (props) => {
         >
           {label}
         </ItemLabel>
+        <Rect
+          x={
+            textAlign === 'center'
+              ? (width - textRealWidth) / 2
+              : textAlign === 'right'
+                ? width - textRealWidth
+                : 0
+          }
+          y={labelY + labelBounds.height}
+          width={textRealWidth}
+          height={underlineHeight}
+          fill={themeColors.colorPrimary}
+          rx={underlineHeight / 2}
+          ry={underlineHeight / 2}
+        />
         <ItemDesc
           indexes={indexes}
           width={width}
           height={descHeight}
-          y={labelY + labelBounds.height + gap}
+          y={labelY + labelBounds.height + gap + underlineHeight}
           alignHorizontal={textAlign}
           alignVertical={getDescVerticalAlign(positionV, false)}
           lineNumber={descLineNumber}
@@ -178,11 +199,20 @@ export const SimpleItem: ComponentType<SimpleItemProps> = (props) => {
               >
                 {label}
               </ItemLabel>
+              <Rect
+                x={(width - textRealWidth) / 2}
+                rx={underlineHeight / 2}
+                ry={underlineHeight / 2}
+                y={labelY + labelBounds.height}
+                width={textRealWidth}
+                height={underlineHeight}
+                fill={themeColors.colorPrimary}
+              />
               <ItemDesc
                 indexes={indexes}
                 width={width}
                 height={descHeight}
-                y={labelY + labelBounds.height + gap}
+                y={labelY + labelBounds.height + gap + underlineHeight}
                 alignHorizontal="center"
                 alignVertical="bottom"
                 lineNumber={descLineNumber}
@@ -207,11 +237,20 @@ export const SimpleItem: ComponentType<SimpleItemProps> = (props) => {
               >
                 {label}
               </ItemLabel>
+              <Rect
+                x={(width - textRealWidth) / 2}
+                y={labelY + labelBounds.height}
+                width={textRealWidth}
+                height={underlineHeight}
+                fill={themeColors.colorPrimary}
+                rx={underlineHeight / 2}
+                ry={underlineHeight / 2}
+              />
               <ItemDesc
                 indexes={indexes}
                 width={width}
                 height={descHeight}
-                y={labelY + labelBounds.height + gap}
+                y={labelY + labelBounds.height + gap + underlineHeight}
                 alignHorizontal="center"
                 alignVertical="top"
                 lineNumber={descLineNumber}
@@ -267,11 +306,20 @@ export const SimpleItem: ComponentType<SimpleItemProps> = (props) => {
             >
               {label}
             </ItemLabel>
+            <Rect
+              x={textWidth - textRealWidth}
+              y={labelY + labelBounds.height}
+              width={textRealWidth}
+              height={underlineHeight}
+              fill={themeColors.colorPrimary}
+              rx={underlineHeight / 2}
+              ry={underlineHeight / 2}
+            />
             <ItemDesc
               indexes={indexes}
               width={textWidth}
               height={descHeight}
-              y={labelY + labelBounds.height + gap}
+              y={labelY + labelBounds.height + gap + underlineHeight}
               alignHorizontal="right"
               alignVertical={getDescVerticalAlign(positionV, true)}
               lineNumber={descLineNumber}
@@ -296,11 +344,20 @@ export const SimpleItem: ComponentType<SimpleItemProps> = (props) => {
             >
               {label}
             </ItemLabel>
+            <Rect
+              x={0}
+              y={labelY + labelBounds.height}
+              width={textRealWidth}
+              height={underlineHeight}
+              fill={themeColors.colorPrimary}
+              rx={underlineHeight / 2}
+              ry={underlineHeight / 2}
+            />
             <ItemDesc
               indexes={indexes}
               width={textWidth}
               height={descHeight}
-              y={labelY + labelBounds.height + gap}
+              y={labelY + labelBounds.height + gap + underlineHeight}
               alignHorizontal="left"
               alignVertical={getDescVerticalAlign(positionV, true)}
               lineNumber={descLineNumber}
