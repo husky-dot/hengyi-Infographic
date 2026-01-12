@@ -59,7 +59,7 @@ const DEFAULT_NODE_GAP = 14;
 const LAYOUT_PADDING = 30;
 const DEFAULT_EDGE_ALIGN: EdgeAlign = 'center';
 const DEFAULT_EDGE_TYPE: EdgeType = 'curved';
-const DEFAULT_EDGE_WIDTH = 2;
+const DEFAULT_EDGE_WIDTH = 1;
 const DEFAULT_COLOR_MODE: HierarchyColorMode = 'node';
 const DEFAULT_EDGE_COLOR_MODE: EdgeColorMode = 'solid';
 

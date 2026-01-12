@@ -17,6 +17,7 @@ export interface sequenceCylinders3dProps extends BaseStructureProps {
   itemVerticalAlign?: 'top' | 'center' | 'bottom';
   itemVerticalOffset?: number;
   firstDecorationWidth?: number;
+  itemWidth?: number;
 }
 
 interface CylinderPosition {
@@ -208,6 +209,9 @@ const createGradientDefs = (index: number, color: string): JSXElement[] => {
   const baseColor = tinycolor(color);
   const defs: JSXElement[] = [];
 
+  // 侧面渐变
+  // background: linear-gradient(180deg, #66C43B 0%, rgba(212, 239, 200, 0.4) 99%);
+  // opacity: 0.6
   defs.push(
     <linearGradient
       id={`cylinderGradient${index}`}
@@ -216,25 +220,21 @@ const createGradientDefs = (index: number, color: string): JSXElement[] => {
       x2="0%"
       y2="100%"
     >
-      <stop offset="0%" stopColor={baseColor.toRgbString()} stopOpacity={0.7} />
+      <stop offset="0%" stopColor={baseColor.toRgbString()} stopOpacity={0.6} />
       <stop
-        offset="40%"
-        stopColor={baseColor.clone().lighten(5).toRgbString()}
-        stopOpacity={0.65}
-      />
-      <stop
-        offset="70%"
-        stopColor={baseColor.clone().lighten(15).toRgbString()}
-        stopOpacity={0.6}
-      />
-      <stop
-        offset="100%"
-        stopColor={baseColor.clone().lighten(20).toRgbString()}
-        stopOpacity={0.55}
+        offset="99%"
+        stopColor={baseColor
+          .clone()
+          .lighten(40)
+          .setAlpha(0.4)
+          .toRgbString()}
+        stopOpacity={0.6 * 0.4}
       />
     </linearGradient>,
   );
 
+  // 顶部渐变
+  // background: linear-gradient(180deg, #79CD52 0%, #D4EFC8 100%);
   defs.push(
     <linearGradient
       id={`topGradient${index}`}
@@ -243,15 +243,18 @@ const createGradientDefs = (index: number, color: string): JSXElement[] => {
       x2="0%"
       y2="100%"
     >
+      <stop offset="0%" stopColor={baseColor.toRgbString()} stopOpacity={1} />
       <stop
-        offset="0%"
-        stopColor={baseColor.clone().lighten(15).toRgbString()}
+        offset="100%"
+        stopColor={baseColor.clone().lighten(30).toRgbString()}
         stopOpacity={1}
       />
-      <stop offset="100%" stopColor="#fafafa" stopOpacity={1} />
     </linearGradient>,
   );
 
+  // 底部渐变
+  // opacity: 0.2
+  // linear-gradient(180deg, rgba(0, 110, 237, 0.75) 0%, rgba(0, 101, 217, 0.65) 100%)
   defs.push(
     <linearGradient
       id={`bottomGradient${index}`}
@@ -262,44 +265,13 @@ const createGradientDefs = (index: number, color: string): JSXElement[] => {
     >
       <stop
         offset="0%"
-        stopColor={baseColor.clone().darken(8).toRgbString()}
-        stopOpacity={0.75}
-      />
-      <stop
-        offset="50%"
         stopColor={baseColor.clone().darken(5).toRgbString()}
-        stopOpacity={0.7}
+        stopOpacity={0.2 * 0.75}
       />
       <stop
         offset="100%"
-        stopColor={baseColor.clone().darken(12).toRgbString()}
-        stopOpacity={0.65}
-      />
-    </linearGradient>,
-  );
-
-  defs.push(
-    <linearGradient
-      id={`numberGradient${index}`}
-      x1="0%"
-      y1="0%"
-      x2="100%"
-      y2="100%"
-    >
-      <stop
-        offset="0%"
-        stopColor={baseColor.clone().darken(0).toRgbString()}
-        stopOpacity={0.9}
-      />
-      <stop
-        offset="50%"
-        stopColor={baseColor.clone().lighten(5).toRgbString()}
-        stopOpacity={0.85}
-      />
-      <stop
-        offset="100%"
-        stopColor={baseColor.clone().lighten(10).toRgbString()}
-        stopOpacity={0.8}
+        stopColor={baseColor.clone().darken(15).toRgbString()}
+        stopOpacity={0.2 * 0.65}
       />
     </linearGradient>,
   );
@@ -315,6 +287,30 @@ const createGradientDefs = (index: number, color: string): JSXElement[] => {
       <stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.2} />
       <stop offset="90%" stopColor="#FFFFFF" stopOpacity={0} />
     </linearGradient>,
+  );
+
+  // 顶部内阴影
+  // box-shadow: inset 0px 1.67px 4.19px 0px #7791F9;
+  defs.push(
+    <filter
+      id={`cylinderTopShadow-${index}`}
+      x="-50%"
+      y="-50%"
+      width="200%"
+      height="200%"
+    >
+      <feOffset dx="0" dy="1.67" />
+      <feGaussianBlur stdDeviation="2.1" result="offset-blur" />
+      <feComposite
+        operator="out"
+        in="SourceGraphic"
+        in2="offset-blur"
+        result="inverse"
+      />
+      <feFlood floodColor={baseColor.toRgbString()} result="color" />
+      <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+      <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+    </filter>,
   );
 
   return defs;
@@ -377,6 +373,7 @@ const createCylinderElements = (
       rx={cylinderRx}
       ry={cylinderRy}
       fill={`url(#topGradient${index})`}
+      filter={`url(#cylinderTopShadow-${index})`}
     />,
   );
 
@@ -394,7 +391,7 @@ const createCylinderElements = (
       fontFamily="Arial Black, sans-serif"
       fontSize={32}
       fontWeight={900}
-      fill={`url(#numberGradient${index})`}
+      fill="#fff"
       alignHorizontal="center"
       alignVertical="middle"
       transform={transformValue}
@@ -601,14 +598,21 @@ export const sequenceCylinders3d: ComponentType<sequenceCylinders3dProps> = (
     heightIncrement = 40,
     depthSpacing = 60,
     itemVerticalAlign = 'top',
-    itemVerticalOffset = -12,
-    firstDecorationWidth = 90,
+    itemVerticalOffset = -14,
+    firstDecorationWidth = 120,
+    itemWidth = 230,
   } = props;
 
   const { title, desc, items = [] } = data;
   const titleContent = Title ? <Title title={title} desc={desc} /> : null;
   const itemBounds = getElementBounds(
-    <Item indexes={[0]} data={data} datum={items[0]} positionH="center" />,
+    <Item
+      indexes={[0]}
+      data={data}
+      datum={items[0]}
+      positionH="center"
+      width={itemWidth}
+    />,
   );
   const btnBounds = getElementBounds(<BtnAdd indexes={[0]} />);
 
@@ -690,6 +694,7 @@ export const sequenceCylinders3d: ComponentType<sequenceCylinders3dProps> = (
         x={itemPos.x}
         y={itemPos.y}
         positionH={index % 2 === 0 ? 'flipped' : 'normal'}
+        width={itemWidth}
       />
     );
 

@@ -91,7 +91,7 @@ export const HierarchyTree: ComponentType<HierarchyTreeProps> = (props) => {
     // 连接线样式配置
     edgeType = 'straight',
     edgeColorMode = 'gradient',
-    edgeWidth = 3,
+    edgeWidth = 1,
     edgeStyle = 'solid',
     edgeDashPattern = '5,5',
     edgeCornerRadius = 0,

@@ -1,4 +1,5 @@
-import { ComponentType, Group, Rect, getElementBounds } from '../../jsx';
+import tinycolor from 'tinycolor2';
+import { ComponentType, Defs, Group, Rect, getElementBounds } from '../../jsx';
 
 import { ItemDesc, ItemLabel } from '../components';
 
@@ -67,8 +68,20 @@ export const UnderlineText: ComponentType<UnderlineTextProps> = (props) => {
   const descX = 0; // 使用 alignHorizontal 控制对齐
   const descY = underlineY + underlineHeight + gap * 2;
 
+  const gradientId = `underline-gradient-${indexes.join('-')}-${tinycolor(themeColors.colorPrimary).toHex()}`;
+  const endColor = tinycolor(themeColors.colorPrimary)
+    .lighten(29)
+    .desaturate(6)
+    .toRgbString();
+
   return (
     <Group width={width} height={contentHeight} {...restProps}>
+      <Defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor={themeColors.colorPrimary} />
+          <stop offset="99%" stopColor={endColor} />
+        </linearGradient>
+      </Defs>
       {/* 标题 */}
       {datum.label && (
         <ItemLabel
@@ -92,7 +105,8 @@ export const UnderlineText: ComponentType<UnderlineTextProps> = (props) => {
           y={underlineY}
           width={underlineWidth}
           height={underlineHeight}
-          fill={themeColors.colorPrimary}
+          fill={`url(#${gradientId})`}
+          opacity={0.5}
           data-element-type="shape"
         />
       )}
