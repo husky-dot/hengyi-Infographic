@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@antv/infographic",
+    "jsxImportSource": "weita-infographic",
     "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "./esm",
@@ -17,8 +17,8 @@
     "types": ["node"],
     "resolveJsonModule": true,
     "paths": {
-      "@antv/infographic": ["./src"],
-      "@antv/infographic/*": ["./src/*"]
+      "weita-infographic": ["./src"],
+      "weita-infographic/*": ["./src/*"]
     }
   },
   "include": ["src"],

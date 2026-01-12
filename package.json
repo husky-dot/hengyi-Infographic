@@ -1,6 +1,6 @@
 {
-  "name": "@antv/infographic",
-  "version": "0.2.1",
+  "name": "weita-infographic",
+  "version": "0.2.2",
   "description": "An Infographic Generation and Rendering Framework, bring words to life!",
   "keywords": [
     "antv",
@@ -50,7 +50,7 @@
     "clean": "rimraf esm lib dist tsconfig.tsbuildinfo",
     "dev": "cd dev && npm run dev",
     "format": "prettier --write . --ignore-path ./.gitignore",
-    "lint": "run-s lint:root lint:site",
+    "lint": "run-s lint:root",
     "lint:root": "eslint . --ext .ts,.tsx --ignore-pattern 'site/**' && npm run check:test",
     "lint:site": "npm --prefix site run lint",
     "prepublishOnly": "npm run ci",

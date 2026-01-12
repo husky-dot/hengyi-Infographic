@@ -134,11 +134,3 @@ registerItem('circle-node', {
   component: CircleNode,
   composites: ['label'],
 });
-
-function fadeWithWhite(
-  color: tinycolor.Instance,
-  mixPct: number,
-  alpha: number,
-) {
-  return tinycolor.mix(color, '#ffffff', mixPct).setAlpha(alpha).toRgbString();
-}
