@@ -8,6 +8,7 @@ export * from './font';
 export * from './get-types';
 export * from './hash';
 export * from './icon';
+export * from './is-node';
 export * from './item';
 export * from './join';
 export * from './measure-text';

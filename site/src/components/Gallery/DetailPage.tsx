@@ -45,22 +45,24 @@ const TRANSLATIONS = {
   },
 };
 
-export default function DetailPage() {
+export default function DetailPage({templateId}: {templateId?: string}) {
   const router = useRouter();
-  const {template} = router.query;
+  const template = templateId || router.query.template;
 
   const initialTemplate =
     TEMPLATES.find((t) => t.template === template) || TEMPLATES[0];
 
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(initialTemplate?.syntax || '');
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const detailTexts = useLocaleBundle(TRANSLATIONS);
 
-  // Initialize code template
+  // Initialize code template only when template ID changes (client-side)
   useEffect(() => {
-    setCode(initialTemplate.syntax);
-    setError(null);
+    if (initialTemplate) {
+      setCode(initialTemplate.syntax);
+      setError(null);
+    }
   }, [initialTemplate]);
 
   const handleCodeChange = (e: string) => {
@@ -106,7 +108,7 @@ export default function DetailPage() {
         <div className="flex-1 overflow-auto flex items-center justify-center p-8 custom-scrollbar relative z-10">
           <div
             className="relative bg-card dark:bg-card-dark rounded-2xl shadow-nav dark:shadow-nav-dark border border-primary/10 dark:border-primary-dark/10 overflow-hidden transition-all duration-300"
-            style={{width: '100%', maxWidth: '1000px', minHeight: '640px'}}>
+            style={{width: '100%', height: '100%'}}>
             <div className="absolute top-4 right-4 opacity-0 hover:opacity-100 transition-opacity z-20">
               <button className="p-2 bg-card/90 dark:bg-card-dark/90 backdrop-blur rounded-lg shadow-secondary-button-stroke dark:shadow-secondary-button-stroke-dark border border-primary/10 dark:border-primary-dark/10 text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark">
                 <Maximize2 className="w-4 h-4" />
@@ -195,6 +197,10 @@ export default function DetailPage() {
               onChange={handleCodeChange}
               value={code}
             />
+            {/* Hidden pre tag for SEO */}
+            <pre className="sr-only" aria-hidden="true">
+              {code}
+            </pre>
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 px-4 py-2 bg-card/80 dark:bg-card-dark/80 backdrop-blur border-t border-primary/10 dark:border-primary-dark/10 text-[10px] text-tertiary dark:text-tertiary-dark flex justify-between items-center">

@@ -12,6 +12,7 @@ import {
   parseOptions,
 } from '../options';
 import { Renderer } from '../renderer';
+import { waitForSvgLoads } from '../resource';
 import { parseSyntax, type SyntaxError } from '../syntax';
 import { IEventEmitter } from '../types';
 import { getTypes, parseSVG } from '../utils';
@@ -54,7 +55,7 @@ export class Infographic {
       warnings,
     } = parseSyntaxOptions(options);
     if (isInitial) {
-      this.initialOptions = cloneOptions(parsedOptions);
+      this.initialOptions = parsedOptions;
     }
 
     const base =
@@ -115,6 +116,17 @@ export class Infographic {
 
     this.rendered = true;
     this.emitter.emit('rendered', { node: this.node, options: this.options });
+    const currentNode = this.node;
+    if (currentNode) {
+      void waitForSvgLoads(currentNode).then(() => {
+        if (this.node !== currentNode) return;
+        this.emitter.emit('loaded', {
+          node: currentNode,
+          options: this.options,
+        });
+      });
+    }
+    return true;
   }
 
   /**

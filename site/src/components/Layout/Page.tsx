@@ -19,6 +19,8 @@ import {TopNav} from './TopNav';
 
 import(/* webpackPrefetch: true */ '../MDX/CodeBlock/CodeBlock');
 
+const CUSTOM_PAGES = ['gallery', 'ai', 'icon', 'editor'];
+
 interface PageProps {
   children: React.ReactNode;
   toc: Array<TocItem>;
@@ -32,13 +34,17 @@ interface PageProps {
   section:
     | 'learn'
     | 'reference'
-    | 'examples'
+    | 'gallery'
     | 'ai'
     | 'icon'
     | 'home'
+    | 'editor'
     | 'unknown';
   languages?: Languages | null;
   showFooter?: boolean;
+  showSidebar?: boolean;
+  showTitle?: boolean;
+  showTopNav?: boolean;
   topNavOptions?: {
     hideBrandWhenHeroVisible?: boolean;
     overlayOnHome?: boolean;
@@ -54,6 +60,9 @@ export function Page({
   section,
   languages = null,
   showFooter = true,
+  showSidebar = true,
+  showTitle = true,
+  showTopNav = true,
   topNavOptions,
 }: PageProps) {
   const {asPath} = useRouter();
@@ -66,6 +75,19 @@ export function Page({
   const version = meta.version;
   const description = meta.description || route?.description || '';
   const isHomePage = cleanedPath === '/';
+  const [hideTopNav, setHideTopNav] = React.useState(false);
+  const isFullWidthSection = CUSTOM_PAGES.includes(section);
+
+  React.useEffect(() => {
+    const handleFullscreenChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{fullscreen: boolean}>;
+      setHideTopNav(customEvent.detail.fullscreen);
+    };
+
+    window.addEventListener('preview-fullscreen', handleFullscreenChange);
+    return () =>
+      window.removeEventListener('preview-fullscreen', handleFullscreenChange);
+  }, []);
 
   let content;
   if (isHomePage) {
@@ -73,7 +95,7 @@ export function Page({
   } else {
     content = (
       <div className="ps-0">
-        {!['examples', 'ai', 'icon'].includes(section) && (
+        {showTitle && !CUSTOM_PAGES.includes(section) && (
           <div>
             <PageHeading
               title={title}
@@ -84,18 +106,9 @@ export function Page({
             />
           </div>
         )}
-        <div
-          className={cn(
-            ['examples', 'ai', 'icon'].includes(section)
-              ? 'px-0'
-              : 'px-5 sm:px-12'
-          )}>
+        <div className={cn(isFullWidthSection ? 'px-0' : 'px-5 sm:px-12')}>
           <div
-            className={cn(
-              ['examples', 'ai', 'icon'].includes(section)
-                ? 'w-full'
-                : 'max-w-7xl mx-auto'
-            )}>
+            className={cn(isFullWidthSection ? 'w-full' : 'max-w-7xl mx-auto')}>
             <TocContext value={toc}>
               <LanguagesContext value={languages}>{children}</LanguagesContext>
             </TocContext>
@@ -110,14 +123,18 @@ export function Page({
     );
   }
 
-  let hasColumns = true;
-  let showSidebar = true;
-  let showToc = true;
+  let hasColumns = showSidebar;
+  let showToc = toc.length > 0;
   if (isHomePage) {
     hasColumns = false;
     showSidebar = false;
     showToc = false;
-  } else if (section === 'examples' || section === 'ai' || section === 'icon') {
+  } else if (
+    section === 'gallery' ||
+    section === 'ai' ||
+    section === 'icon' ||
+    section === 'editor'
+  ) {
     showToc = false;
     hasColumns = false;
     showSidebar = false;
@@ -142,14 +159,16 @@ export function Page({
         searchOrder={searchOrder}
       />
       {/* <SocialBanner /> */}
-      <TopNav
-        section={section}
-        routeTree={routeTree}
-        breadcrumbs={breadcrumbs}
-        hideBrandWhenHeroVisible={topNavHideBrand}
-        overlayOnHome={topNavOverlay}
-        heroAnchorId={topNavHeroAnchorId}
-      />
+      {showTopNav && !hideTopNav && (
+        <TopNav
+          section={section}
+          routeTree={routeTree}
+          breadcrumbs={breadcrumbs}
+          hideBrandWhenHeroVisible={topNavHideBrand}
+          overlayOnHome={topNavOverlay}
+          heroAnchorId={topNavHeroAnchorId}
+        />
+      )}
       <div
         className={cn(
           hasColumns &&
@@ -171,7 +190,7 @@ export function Page({
           <main className="min-w-0 isolate">
             <article
               className="font-normal break-words text-primary dark:text-primary-dark"
-              key={asPath}>
+              key={cleanedPath}>
               {content}
             </article>
             <div
@@ -197,7 +216,9 @@ export function Page({
           </main>
         </Suspense>
         <div className="hidden -mt-16 lg:max-w-custom-xs 2xl:block">
-          {showToc && toc.length > 0 && <Toc headings={toc} key={asPath} />}
+          {showToc && toc.length > 0 && (
+            <Toc headings={toc} key={cleanedPath} />
+          )}
         </div>
       </div>
     </>

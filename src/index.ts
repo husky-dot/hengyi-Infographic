@@ -1,6 +1,3 @@
-import pkg from '../package.json';
-
-export const VERSION = pkg.version;
 export * from './designs';
 export { getItemProps, getThemeColors } from './designs/utils';
 export {
@@ -14,6 +11,7 @@ export {
   ZoomWheel,
 } from './editor/interactions';
 export { EditBar, Plugin, ResizeElement } from './editor/plugins';
+export { exportToSVG } from './exporter';
 export {
   Defs,
   Ellipse,
@@ -39,6 +37,7 @@ export {
   getFonts,
   getPalette,
   getPaletteColor,
+  getPalettes,
   registerFont,
   registerPalette,
   registerPattern,
@@ -49,9 +48,15 @@ export { Infographic } from './runtime';
 export { parseSyntax } from './syntax';
 export { getTemplate, getTemplates, registerTemplate } from './templates';
 export { getTheme, getThemes, registerTheme } from './themes';
-export { parseSVG } from './utils';
+export { parseSVG, setFontExtendFactor } from './utils';
+export { VERSION } from './version';
 
 export type { EditBarOptions } from './editor';
+export type {
+  ExportOptions,
+  PNGExportOptions,
+  SVGExportOptions,
+} from './exporter';
 export type {
   Bounds,
   ComponentType,

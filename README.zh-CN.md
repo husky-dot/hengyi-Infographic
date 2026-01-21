@@ -34,8 +34,8 @@
   <a href="https://infographic.antv.vision/gallery">
     <img src="https://img.shields.io/badge/%E7%A4%BA%E4%BE%8B-13C2C2?style=for-the-badge" alt="示例" />
   </a>
-  <a href="./prompt.zh-CN.md">
-    <img src="https://img.shields.io/badge/Prompt-FA8C16?style=for-the-badge" alt="Prompt" />
+  <a href="https://github.com/antvis/Infographic/tree/main/.skills">
+    <img src="https://img.shields.io/badge/Skills-FA8C16?style=for-the-badge" alt="Skills" />
   </a>
   <a href="https://infographic.antv.vision/ai">
     <img src="https://img.shields.io/badge/AI%20Agent-EB2F96?style=for-the-badge" alt="AI Agent" />
@@ -79,13 +79,13 @@ const infographic = new Infographic({
 infographic.render(`
 infographic list-row-simple-horizontal-arrow
 data
-  items:
-    - label: Step 1
-      desc: Start
-    - label: Step 2
-      desc: In Progress
-    - label: Step 3
-      desc: Complete
+  lists
+    - label Step 1
+      desc Start
+    - label Step 2
+      desc In Progress
+    - label Step 3
+      desc Complete
 `);
 ```
 
@@ -108,6 +108,42 @@ for (const chunk of chunks) {
 ```
 
 <img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*e_PFSZrR9AQAAAAASdAAAAgAemJ7AQ/original" width="480" alt="AntV Infographic 流式渲染">
+
+## 🔧 Skills 集成
+
+AntV Infographic 提供了多项能力，便于与 AI 大模型集成：
+
+- **infographic-creator**：创建一个渲染信息图的 HTML 文件
+- **infographic-syntax-creator**：根据描述生成信息图语法
+- **infographic-structure-creator**：生成自定义的结构设计
+- **infographic-item-creator**：生成自定义的数据项设计
+- **infographic-template-updater**：（开发者使用）用于更新信息图模板库
+
+### Claude Code
+
+> 我们暂未提供 claude marketplace，因此需要手动集成。
+
+```bash
+set -e
+
+VERSION=0.2.4 # 替换为最新版本号，例如 0.2.4
+BASE_URL=https://github.com/antvis/Infographic/releases/download
+mkdir -p .claude/skills
+
+curl -L --fail -o skills.zip "$BASE_URL/$VERSION/skills.zip"
+unzip -q -o skills.zip -d .claude/skills
+rm -f skills.zip
+```
+
+### Codex
+
+> 进入 codex
+
+```codex
+# 将 <SKILL> 替换为需要安装的 skill 名称，例如 infographic-creator
+# https://github.com/antvis/Infographic/tree/main/.skills/<SKILL>
+$skill-installer install https://github.com/antvis/Infographic/tree/main/.skills/infographic-creator
+```
 
 ## 💬 社区与交流
 

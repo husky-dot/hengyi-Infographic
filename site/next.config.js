@@ -5,7 +5,6 @@ const nextConfig = {
   pageExtensions: ['jsx', 'js', 'ts', 'tsx', 'mdx', 'md'],
   reactStrictMode: true,
   output: 'export',
-  trailingSlash: true,
   images: {
     // Static export needs unoptimized images
     unoptimized: true,
@@ -13,6 +12,7 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
     reactCompiler: true,
+    externalDir: true,
   },
   env: {},
   webpack: (config, {isServer}) => {
@@ -64,6 +64,12 @@ const nextConfig = {
         },
       })
     );
+
+    config.module.rules.push({
+      test: /\.md$/,
+      resourceQuery: /raw/,
+      type: 'asset/source',
+    });
 
     return config;
   },

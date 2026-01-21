@@ -5,40 +5,59 @@ import {
   parseResourceConfig,
   type ResourceConfig,
 } from '../../resource';
-import type { IllusAttributes, IllusElement } from '../../types';
+import type { IllusAttributes, IllusElement, ItemDatum } from '../../types';
 import {
   createElement,
   getAttributes,
   getOrCreateDefs,
   removeAttributes,
+  setAttributes,
   uuid,
 } from '../../utils';
 import { ElementTypeEnum } from '../constants';
+
+type IllusRenderAttributes = IllusAttributes & Record<string, any>;
 
 export function renderIllus(
   svg: SVGSVGElement,
   node: SVGElement,
   value: string | ResourceConfig | undefined,
+  datum?: ItemDatum,
+  attrs: Record<string, any> = {},
 ): IllusElement | null {
   if (!value) return null;
   const config = parseResourceConfig(value);
   if (!config) return null;
 
   const id = getResourceId(config)!;
+  if (attrs && Object.keys(attrs).length > 0) {
+    setAttributes(node, attrs);
+  }
   const clipPathId = createClipPath(svg, node, id);
 
-  loadResource(svg, 'illus', config);
+  loadResource(svg, 'illus', config, datum);
 
   const { data, color } = config;
   return createIllusElement(
     id,
     {
       ...parseIllusBounds(node),
-      'clip-path': `url(#${clipPathId})`,
       ...(color ? { color } : {}),
+      ...attrs,
+      'clip-path': `url(#${clipPathId})`,
     },
     data,
   );
+}
+
+export function renderItemIllus(
+  svg: SVGSVGElement,
+  node: SVGElement,
+  datum: ItemDatum,
+) {
+  const value = datum.illus;
+  const attrs = datum.attributes?.illus as Record<string, any> | undefined;
+  return renderIllus(svg, node, value, datum, attrs);
 }
 
 function createClipPath(
@@ -69,7 +88,11 @@ function createClipPath(
   return clipPathId;
 }
 
-function createIllusElement(id: string, attrs: IllusAttributes, value: string) {
+function createIllusElement(
+  id: string,
+  attrs: IllusRenderAttributes,
+  value: string,
+) {
   const { 'clip-path': clipPath, ...restAttrs } = attrs;
 
   const { x = '0', y = '0', width = '0', height = '0' } = restAttrs;
