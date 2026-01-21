@@ -1,4 +1,4 @@
-import camelCase from 'lodash-es/camelCase';
+import { camelCase } from 'lodash-es';
 import { TextProps } from '../editor';
 import type {
   TextAttributes,
@@ -7,6 +7,7 @@ import type {
   TextVerticalAlign,
 } from '../types';
 import { decodeFontFamily, encodeFontFamily } from './font';
+import { measureText } from './measure-text';
 import { isForeignObjectElement } from './recognizer';
 import { createElement, setAttributes } from './svg';
 
@@ -20,6 +21,8 @@ export function createTextElement(
   attributes: TextAttributes,
 ): TextElement {
   const entity = document.createElement('span');
+  // Set xmlns on the span element (HTML content)
+  entity.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
   const foreignObject = createElement<SVGForeignObjectElement>(
     'foreignObject',
     { overflow: 'visible' },
@@ -46,9 +49,19 @@ export function updateTextElement(
 
   if (entity) {
     Object.assign(entity.style, getTextStyle(attributes));
-
     if (!width || !height) {
-      const rect = measureTextSpan(entity);
+      const content = textContent ?? getTextContent(text);
+      const { fontFamily, fontSize, fontWeight, lineHeight } = entity.style;
+      const fSize = fontSize ? parseFloat(String(fontSize)) : 12;
+      const rect = measureText(content, {
+        fontFamily,
+        fontSize: fSize,
+        fontWeight,
+        lineHeight: lineHeight.endsWith('px')
+          ? parseFloat(lineHeight)
+          : (parseFloat(lineHeight) || 1.4) * fSize,
+      });
+
       if (!width && !text.hasAttribute('width')) width = String(rect.width);
       if (!height && !text.hasAttribute('height')) height = String(rect.height);
     }
@@ -153,32 +166,25 @@ export function getTextStyle(attributes: TextAttributes) {
         : +lineHeight;
   if (letterSpacing) style.letterSpacing = `${letterSpacing}px`;
   if (strokeWidth) style.strokeWidth = `${strokeWidth}px`;
-  style.fontFamily = fontFamily
-    ? encodeFontFamily(fontFamily)
-    : fontFamily || '';
+  if (fontFamily) style.fontFamily = encodeFontFamily(fontFamily);
 
   return style;
 }
 
-function measureTextSpan(span: HTMLSpanElement) {
-  const parentNode = span.parentNode;
-  span.style.visibility = 'hidden';
-  document.body.appendChild(span);
-  const rect = span.getBoundingClientRect();
-  if (parentNode) parentNode.appendChild(span);
-  else document.body.removeChild(span);
-  span.style.visibility = 'visible';
-  return rect;
-}
-
 export function getTextContent(text: TextElement): string {
-  return getTextEntity(text)?.innerText || '';
+  const entity = getTextEntity(text);
+  if (!entity) return '';
+  return entity.innerText || entity.textContent || '';
 }
 
 export function setTextContent(text: TextElement, content: string): void {
   const entity = getTextEntity(text);
   if (entity) {
-    entity.innerText = content;
+    try {
+      entity.innerText = content;
+    } catch {
+      entity.textContent = content;
+    }
   }
 }
 

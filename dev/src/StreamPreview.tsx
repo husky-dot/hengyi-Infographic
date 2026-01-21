@@ -19,7 +19,7 @@ const CODE_PRESETS = [
 data
   title 客户增长引擎
   desc 多渠道触达与复购提升
-  items
+  lists
     - label 线索获取
       value 18.6
       desc 渠道投放与内容获客
@@ -54,38 +54,38 @@ data
       icon company-021_v1_lineal
 `,
   },
-  //   {
-  //     key: 'compare',
-  //     label: '对比',
-  //     code: `infographic compare-hierarchy-left-right-circle-node-pill-badge
-  // data
-  //   title 方案对比
-  //   desc 自研平台 vs 采购方案
-  //   items
-  //     - label 自研平台
-  //       children
-  //         - label 研发周期
-  //           desc 6-8个月
-  //           icon wrench
-  //         - label 灵活扩展
-  //           desc 组件化与可插拔
-  //           icon puzzle
-  //         - label 成本结构
-  //           desc 前期投入高
-  //           icon wallet
-  //     - label 采购方案
-  //       children
-  //         - label 上线速度
-  //           desc 2-4周
-  //           icon lightning
-  //         - label 能力边界
-  //           desc 依赖厂商支持
-  //           icon link
-  //         - label 成本结构
-  //           desc 订阅费用可控
-  //           icon receipt
-  // `,
-  //   },
+  {
+    key: 'compare',
+    label: '对比',
+    code: `infographic compare-hierarchy-left-right-circle-node-pill-badge
+  data
+    title 方案对比
+    desc 自研平台 vs 采购方案
+    compares
+      - label 自研平台
+        children
+          - label 研发周期
+            desc 6-8个月
+            icon wrench
+          - label 灵活扩展
+            desc 组件化与可插拔
+            icon puzzle
+          - label 成本结构
+            desc 前期投入高
+            icon wallet
+      - label 采购方案
+        children
+          - label 上线速度
+            desc 2-4周
+            icon lightning
+          - label 能力边界
+            desc 依赖厂商支持
+            icon link
+          - label 成本结构
+            desc 订阅费用可控
+            icon receipt
+  `,
+  },
   {
     key: 'hierarchy',
     label: '层级',
@@ -93,34 +93,34 @@ data
 data
   title 组织结构
   desc 产品增长团队
-  items
-    - label 产品增长
-      icon company-021_v1_lineal
-      children
-        - label 增长策略
-          desc 指标与实验设计
-          icon antenna-bars-5_v1_lineal
-          children
-            - label 漏斗拆解
-              icon achievment-050_v1_lineal
-            - label 增长实验
-              icon 3d-file-015_v1_lineal
-        - label 用户运营
-          desc 生命周期运营
-          icon activities-037_v1_lineal
-          children
-            - label 新手引导
-              icon account-book-025_v1_lineal
-            - label 召回机制
-              icon activities-037_v1_lineal
-        - label 数据分析
-          desc 看板与归因
-          icon antenna-bars-5_v1_lineal
-          children
-            - label 指标体系
-              icon company-021_v1_lineal
-            - label 归因模型
-              icon 3d-file-015_v1_lineal
+  root
+    label 产品增长
+    icon company-021_v1_lineal
+    children
+      - label 增长策略
+        desc 指标与实验设计
+        icon antenna-bars-5_v1_lineal
+        children
+          - label 漏斗拆解
+            icon achievment-050_v1_lineal
+          - label 增长实验
+            icon 3d-file-015_v1_lineal
+      - label 用户运营
+        desc 生命周期运营
+        icon activities-037_v1_lineal
+        children
+          - label 新手引导
+            icon account-book-025_v1_lineal
+          - label 召回机制
+            icon activities-037_v1_lineal
+      - label 数据分析
+        desc 看板与归因
+        icon antenna-bars-5_v1_lineal
+        children
+          - label 指标体系
+            icon company-021_v1_lineal
+          - label 归因模型
+            icon 3d-file-015_v1_lineal
 `,
   },
 ];

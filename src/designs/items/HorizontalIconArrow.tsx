@@ -16,7 +16,7 @@ import {
   ItemLabel,
   ShapesGroup,
 } from '../components';
-import { FlexLayout } from '../layouts';
+import { AlignLayout, FlexLayout } from '../layouts';
 import { getItemProps } from '../utils';
 import { registerItem } from './registry';
 import type { BaseItemProps } from './types';
@@ -182,7 +182,12 @@ export const HorizontalIconArrow: ComponentType<HorizontalIconArrowProps> = (
             <Gap height={iconGap} />
           </>
         )}
-        <Group>
+        <AlignLayout
+          horizontal="center"
+          vertical="middle"
+          width={width}
+          height={arrowHeight}
+        >
           <HorizontalArrow
             width={width}
             height={arrowHeight}
@@ -192,8 +197,8 @@ export const HorizontalIconArrow: ComponentType<HorizontalIconArrowProps> = (
             opacity={0.8}
           />
           <Text
-            x={width / 2}
-            y={arrowHeight / 2}
+            width={width}
+            height={arrowHeight}
             alignHorizontal="center"
             alignVertical="middle"
             fill={themeColors.colorPrimary}
@@ -206,7 +211,7 @@ export const HorizontalIconArrow: ComponentType<HorizontalIconArrowProps> = (
                   .padStart(2, '0')
                   .slice(-2)}
           </Text>
-        </Group>
+        </AlignLayout>
         {!isVNormal ? (
           <>
             {dotLine}

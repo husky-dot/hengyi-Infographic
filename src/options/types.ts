@@ -1,7 +1,7 @@
 import type { DesignOptions, ParsedDesignsOptions } from '../designs';
 import type { ElementProps, IInteraction, IPlugin } from '../editor';
 import type { ThemeConfig } from '../themes';
-import type { Data, Padding } from '../types';
+import type { Data, Padding, ParsedData } from '../types';
 
 export interface InfographicOptions {
   /** 容器，可以是选择器或者 HTMLElement */
@@ -43,7 +43,7 @@ export interface ParsedInfographicOptions {
   viewBox?: string;
   template?: string;
   design: ParsedDesignsOptions;
-  data: Data;
+  data: ParsedData;
   theme?: string;
   themeConfig: ThemeConfig;
   svg?: SVGOptions;
@@ -59,4 +59,6 @@ interface SVGOptions {
   attributes?: Record<string, string | number | boolean>;
   id?: string;
   className?: string;
+  /** 是否启用背景 */
+  background?: boolean;
 }

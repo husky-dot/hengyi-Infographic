@@ -27,6 +27,7 @@ const union = (...variants: SchemaNode[]): SchemaNode => ({
   variants,
 });
 const palette = (): SchemaNode => ({ kind: 'palette' });
+const anyObject = (): ObjectSchema => object({}, { allowUnknown: true });
 
 const nullableColorFields = {
   fill: color({ soft: true }),
@@ -38,12 +39,30 @@ const shapeStyleSchema = object(nullableColorFields, { allowUnknown: true });
 
 const itemDatumSchema: ObjectSchema = object({}, { allowUnknown: true });
 itemDatumSchema.fields = {
+  id: string(),
   label: string(),
   value: union(number(), string()),
   desc: string(),
-  icon: string(),
+  icon: union(string(), anyObject()),
+  illus: union(string(), anyObject()),
+  attributes: anyObject(),
+  group: string(),
+  category: string(),
   children: array(itemDatumSchema),
 };
+
+export const RelationSchema: ObjectSchema = object(
+  {
+    id: string(),
+    from: string(),
+    to: string(),
+    label: string(),
+    direction: enumOf(['forward', 'both', 'none']),
+    showArrow: enumOf(['true', 'false']),
+    arrowType: enumOf(['arrow', 'triangle', 'diamond']),
+  },
+  { allowUnknown: true },
+);
 
 export const ThemeSchema = object(
   {
@@ -101,6 +120,16 @@ export const DataSchema = object({
   title: string(),
   desc: string(),
   items: array(itemDatumSchema),
+  lists: array(itemDatumSchema),
+  sequences: array(itemDatumSchema),
+  root: itemDatumSchema,
+  compares: array(itemDatumSchema),
+  nodes: array(itemDatumSchema),
+  relations: array(RelationSchema),
+  values: array(itemDatumSchema),
+  order: enumOf(['asc', 'desc']),
+  illus: anyObject(),
+  attributes: anyObject(),
 });
 
 export const TemplateSchema = object(

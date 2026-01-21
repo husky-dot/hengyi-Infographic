@@ -27,7 +27,7 @@ const infographic = new Infographic({
 
 const syntax = `infographic list-row-simple-horizontal-arrow
 data
-  items
+  lists
     - label Step 1
       desc Start
     - label Step 2
@@ -71,7 +71,7 @@ You can also include it directly in HTML via CDN:
       const syntax = `
         infographic list-row-simple-horizontal-arrow
         data
-          items
+          lists
             - label Step 1
               desc Start
             - label Step 2
@@ -107,7 +107,7 @@ export function App() {
     infographic.render(`
       infographic list-row-simple-horizontal-arrow
           data
-            items
+            lists
               - label Step 1
                 desc Start
               - label Step 2
@@ -151,7 +151,7 @@ onMounted(() => {
   infographic.render(`
     infographic list-row-simple-horizontal-arrow
     data
-      items
+      lists
         - label Step 1
           desc Start
         - label Step 2
@@ -167,4 +167,24 @@ onBeforeUnmount(() => {
   }
 });
 </script>
+```
+
+### Server-Side Rendering {#server-side-rendering}
+
+Using the `renderToString` method provided by `@antv/infographic/ssr`, you can render infographics in non-browser environments and output SVG strings:
+
+```js
+import { renderToString } from '@antv/infographic/ssr';
+
+const syntax = `infographic list-row-simple-horizontal-arrow
+data
+  lists
+    - label Step 1
+      desc Start
+    - label Step 2
+      desc In Progress
+    - label Step 3
+      desc Complete`;
+
+const svg = await renderToString(syntax);
 ```

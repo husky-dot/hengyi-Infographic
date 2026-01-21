@@ -1,21 +1,22 @@
 import { measureText as measure, registerFont } from 'measury';
 import AlibabaPuHuiTi from 'measury/fonts/AlibabaPuHuiTi-Regular';
-import { TextProps } from '../jsx';
+import { JSXNode, TextProps } from '../jsx';
 import { DEFAULT_FONT } from '../renderer';
 import { encodeFontFamily } from './font';
-import { isNode } from './is-node';
+import { isBrowser } from './is-browser';
 
-if (isNode) {
-  registerFont(AlibabaPuHuiTi);
-}
+let FONT_EXTEND_FACTOR = 1.01;
 
-const canUseDOM =
-  !isNode && typeof window !== 'undefined' && typeof document !== 'undefined';
+export const setFontExtendFactor = (factor: number) => {
+  FONT_EXTEND_FACTOR = factor;
+};
+
+registerFont(AlibabaPuHuiTi);
+
 let canvasContext: CanvasRenderingContext2D | null = null;
 let measureSpan: HTMLSpanElement | null = null;
 
 function getCanvasContext() {
-  if (!canUseDOM) return null;
   if (canvasContext) return canvasContext;
   const canvas = document.createElement('canvas');
   canvasContext = canvas.getContext('2d');
@@ -23,7 +24,7 @@ function getCanvasContext() {
 }
 
 function getMeasureSpan() {
-  if (!canUseDOM || !document.body) return null;
+  if (!document.body) return null;
   if (measureSpan) return measureSpan;
   measureSpan = document.createElement('span');
   measureSpan.style.position = 'absolute';
@@ -101,13 +102,15 @@ function measureTextInBrowser(
 }
 
 export function measureText(
-  text: string | number | undefined = '',
+  text: JSXNode = '',
   attrs: TextProps,
 ): { width: number; height: number } {
   if (attrs.width && attrs.height) {
     return { width: attrs.width, height: attrs.height };
   }
-
+  if (typeof text !== 'string' && typeof text !== 'number') {
+    return { width: 0, height: 0 };
+  }
   const {
     fontFamily = DEFAULT_FONT,
     fontSize = 14,
@@ -123,13 +126,13 @@ export function measureText(
     lineHeight,
   };
   const fallback = () => measure(content, options);
-  const metrics = canUseDOM
+  const metrics = isBrowser()
     ? (measureTextInBrowser(content, options) ?? fallback())
     : fallback();
 
   // 额外添加 1% 宽高
   return {
-    width: Math.ceil(metrics.width * 1.01),
-    height: Math.ceil(metrics.height * 1.01),
+    width: Math.ceil(metrics.width * FONT_EXTEND_FACTOR),
+    height: Math.ceil(metrics.height * FONT_EXTEND_FACTOR),
   };
 }
