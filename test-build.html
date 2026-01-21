@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Infographic Build Test</title>
+    <style>
+      body { margin: 0; padding: 20px; font-family: sans-serif; }
+      #container { width: 100%; height: 600px; border: 1px solid #ddd; }
+    </style>
+  </head>
+  <body>
+    <h1>Infographic Build Test</h1>
+    <div id="container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/weita-infographic@latest/dist/infographic.min.js"></script>
+    <script>
+      // Check if library is loaded
+      if (typeof AntVInfographic === 'undefined') {
+        document.body.innerHTML += '<p style="color:red">Error: AntVInfographic library not loaded. Check dist/infographic.min.js</p>';
+      } else {
+        const {Infographic} = AntVInfographic;
+        console.log('Infographic initialized');
+        
+        const infographic = new Infographic({
+          container: '#container',
+        });
+
+        const syntax = `
+          infographic hierarchy-mindmap-branch-gradient-capsule-item
+data
+  title 用户调研
+  desc 通过用户调研，了解用户需求和痛点，指导产品设计和优化
+  items
+    - label 用户调研
+      value 100
+      icon mingcute/user-question-line
+      children
+        - label 用户为什么要使用某个音乐平台
+          value 80
+          icon ref:search:computer-network-line
+          children
+            - label 用户从哪些渠道了解到这个平台
+              value 70
+              icon ref:search:computer-network-line
+            - label 这个平台是哪些方面吸引了用户
+              value 65
+              icon ref:search:computer-network-line
+        - label 用户在什么场景下使用这个平台
+          value 75
+          icon ref:search:computer-network-line
+          children
+            - label 用户从什么事件什么场景下使用
+              value 60
+              icon ref:search:computer-network-line
+            - label 用户在某个场景下用到哪些功能
+              value 55
+              icon ref:search:computer-network-line
+theme light
+          `;
+
+        infographic.render(syntax);
+      }
+    </script>
+  </body>
+</html>

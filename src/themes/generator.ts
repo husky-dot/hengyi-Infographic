@@ -48,7 +48,7 @@ const generateTextColor = (bgColor: Color, isDarkMode: boolean): string => {
 
 const generateSecondaryTextColor = (colorText: string): string => {
   const parsed = oklch(parse(colorText)!);
-  const lighter = { ...parsed, l: Math.min(1, parsed.l + 0.2) };
+  const lighter = { ...parsed, l: Math.min(1, parsed.l + 0.4) };
   return formatHex(lighter);
 };
 

@@ -1,5 +1,6 @@
 import type { ComponentType, JSXElement } from '../../jsx';
-import { Ellipse, getElementBounds, Group, Path } from '../../jsx';
+import { Defs, Ellipse, getElementBounds, Group, Path } from '../../jsx';
+import tinycolor from 'tinycolor2';
 import {
   BtnAdd,
   BtnRemove,
@@ -14,8 +15,6 @@ import type { BaseStructureProps } from './types';
 
 const ITEM_AREA_HORIZONTAL_PADDING = 100;
 const CIRCLE_AREA_HORIZONTAL_PADDING = 50;
-const INNER_ARC_PADDING = 6;
-const ARC_BACKGROUND_OPACITY_HEX = '40';
 
 export interface SequenceCircularProps extends BaseStructureProps {
   outerRadius?: number;
@@ -26,6 +25,73 @@ export interface SequenceCircularProps extends BaseStructureProps {
   iconBgRadius?: number;
   iconSize?: number;
 }
+
+const createRoundedAnnularSector = (
+  cx: number,
+  cy: number,
+  innerR: number,
+  outerR: number,
+  startAngle: number,
+  endAngle: number,
+  cornerRadius: number,
+): string => {
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+
+  const startRad = toRad(startAngle);
+  const endRad = toRad(endAngle);
+
+  const rc = cornerRadius;
+
+  // Calculate angular offsets for corners
+  // Clamp radius if too large
+  const maxRc = (outerR - innerR) / 2;
+  const effectiveRc = Math.min(rc, maxRc);
+
+  let alphaOuter = 0;
+  if (outerR > effectiveRc) {
+    alphaOuter = Math.asin(effectiveRc / (outerR - effectiveRc));
+  }
+
+  const betaInner = Math.asin(effectiveRc / (innerR + effectiveRc));
+
+  const polar = (r: number, theta: number) => ({
+    x: cx + r * Math.cos(theta),
+    y: cy + r * Math.sin(theta),
+  });
+
+  // 1. Outer Start Corner
+  const dOuter = (outerR - effectiveRc) * Math.cos(alphaOuter);
+  const p1_start = polar(dOuter, startRad);
+  const p1_end = polar(outerR, startRad + alphaOuter);
+
+  // 2. Outer End Corner
+  const p2_start = polar(outerR, endRad - alphaOuter);
+  const p2_end = polar(dOuter, endRad);
+
+  // 3. Inner End Corner
+  const dInner = (innerR + effectiveRc) * Math.cos(betaInner);
+  const p3_start = polar(dInner, endRad);
+  const p3_end = polar(innerR, endRad - betaInner);
+
+  // 4. Inner Start Corner
+  const p4_start = polar(innerR, startRad + betaInner);
+  const p4_end = polar(dInner, startRad);
+
+  const largeArcOuter = endRad - startRad - 2 * alphaOuter > Math.PI ? 1 : 0;
+  const largeArcInner = endRad - startRad - 2 * betaInner > Math.PI ? 1 : 0;
+
+  return [
+    `M ${p1_start.x} ${p1_start.y}`,
+    `A ${effectiveRc} ${effectiveRc} 0 0 1 ${p1_end.x} ${p1_end.y}`,
+    `A ${outerR} ${outerR} 0 ${largeArcOuter} 1 ${p2_start.x} ${p2_start.y}`,
+    `A ${effectiveRc} ${effectiveRc} 0 0 1 ${p2_end.x} ${p2_end.y}`,
+    `L ${p3_start.x} ${p3_start.y}`,
+    `A ${effectiveRc} ${effectiveRc} 0 0 1 ${p3_end.x} ${p3_end.y}`,
+    `A ${innerR} ${innerR} 0 ${largeArcInner} 0 ${p4_start.x} ${p4_start.y}`,
+    `A ${effectiveRc} ${effectiveRc} 0 0 1 ${p4_end.x} ${p4_end.y}`,
+    'Z',
+  ].join(' ');
+};
 
 export const SequenceCircular: ComponentType<SequenceCircularProps> = (
   props,
@@ -40,7 +106,7 @@ export const SequenceCircular: ComponentType<SequenceCircularProps> = (
     itemDistance = 310,
     gapAngle = 5,
     iconRadius = 34,
-    iconBgRadius = 38,
+    iconBgRadius = 46,
     iconSize = 36,
   } = props;
 
@@ -78,6 +144,7 @@ export const SequenceCircular: ComponentType<SequenceCircularProps> = (
   const itemElements: JSXElement[] = [];
   const arcElements: JSXElement[] = [];
   const iconElements: JSXElement[] = [];
+  const defsElements: JSXElement[] = [];
 
   // 获取Item组件尺寸
   const itemBounds = getElementBounds(
@@ -88,40 +155,6 @@ export const SequenceCircular: ComponentType<SequenceCircularProps> = (
   const totalGapAngle = items.length * gapAngle;
   const availableAngle = 360 - totalGapAngle;
   const arcAngle = availableAngle / items.length;
-
-  // 创建弧形路径的辅助函数
-  const createArcPath = (
-    centerX: number,
-    centerY: number,
-    innerR: number,
-    outerR: number,
-    startAngle: number,
-    endAngle: number,
-  ): string => {
-    const startAngleRad = (startAngle * Math.PI) / 180;
-    const endAngleRad = (endAngle * Math.PI) / 180;
-
-    const x1 = centerX + innerR * Math.cos(startAngleRad);
-    const y1 = centerY + innerR * Math.sin(startAngleRad);
-    const x2 = centerX + outerR * Math.cos(startAngleRad);
-    const y2 = centerY + outerR * Math.sin(startAngleRad);
-
-    const x3 = centerX + outerR * Math.cos(endAngleRad);
-    const y3 = centerY + outerR * Math.sin(endAngleRad);
-    const x4 = centerX + innerR * Math.cos(endAngleRad);
-    const y4 = centerY + innerR * Math.sin(endAngleRad);
-
-    const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
-
-    return [
-      `M ${x1} ${y1}`,
-      `L ${x2} ${y2}`,
-      `A ${outerR} ${outerR} 0 ${largeArcFlag} 1 ${x3} ${y3}`,
-      `L ${x4} ${y4}`,
-      `A ${innerR} ${innerR} 0 ${largeArcFlag} 0 ${x1} ${y1}`,
-      'Z',
-    ].join(' ');
-  };
 
   const computePosition = ({
     centerX,
@@ -146,11 +179,6 @@ export const SequenceCircular: ComponentType<SequenceCircularProps> = (
     };
   };
 
-  // 计算角度边距，使其在弧形上的实际距离等于径向边距
-  const padding = INNER_ARC_PADDING;
-  const avgRadius = (innerRadius + outerRadius) / 2;
-  const anglePadding = (padding / avgRadius) * (180 / Math.PI);
-
   items.forEach((item, index) => {
     const indexes = [index];
 
@@ -164,44 +192,42 @@ export const SequenceCircular: ComponentType<SequenceCircularProps> = (
 
     // 获取当前项的颜色
     const itemColor = getPaletteColor(options, indexes);
-    const lightColor = itemColor + ARC_BACKGROUND_OPACITY_HEX;
+    
+    // Gradients
+    const fillGradientId = `seq-circ-fill-${index}`;
+    const strokeGradientId = `seq-circ-stroke-${index}`;
 
-    // 绘制外层浅色弧形
-    const outerArcPath = createArcPath(
+    defsElements.push(
+      <linearGradient id={fillGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor={itemColor} stopOpacity={0.3} />
+        <stop offset="100%" stopColor={itemColor} stopOpacity={0.09} />
+      </linearGradient>
+    );
+
+    defsElements.push(
+      <linearGradient id={strokeGradientId} x1="41%" y1="0%" x2="59%" y2="100%">
+        <stop offset="33%" stopColor={itemColor} stopOpacity={0.15} />
+        <stop offset="68%" stopColor={itemColor} stopOpacity={0.5} />
+      </linearGradient>
+    );
+
+    const pathD = createRoundedAnnularSector(
       centerX,
       centerY,
       innerRadius,
       outerRadius,
       startAngle,
       endAngle,
+      10,
     );
 
     arcElements.push(
       <Path
-        d={outerArcPath}
-        fill={lightColor}
-        width={outerRadius * 2}
-        height={outerRadius * 2}
-        data-element-type="shape"
-      />,
-    );
-
-    // 绘制内层主题色弧形
-    const innerArcPath = createArcPath(
-      centerX,
-      centerY,
-      innerRadius + padding,
-      outerRadius - padding,
-      startAngle + anglePadding,
-      endAngle - anglePadding,
-    );
-
-    arcElements.push(
-      <Path
-        d={innerArcPath}
-        fill={itemColor}
-        width={outerRadius * 2}
-        height={outerRadius * 2}
+        d={pathD}
+        fill={`url(#${fillGradientId})`}
+        stroke={`url(#${strokeGradientId})`}
+        strokeWidth={1.4}
+        opacity={0.8}
         data-element-type="shape"
       />,
     );
@@ -211,26 +237,72 @@ export const SequenceCircular: ComponentType<SequenceCircularProps> = (
     const iconCenterX = centerX + iconDistance * Math.cos(midAngleRad);
     const iconCenterY = centerY + iconDistance * Math.sin(midAngleRad);
 
-    // 添加外层白色圆形背景
-    iconElements.push(
-      <Ellipse
-        x={iconCenterX - iconBgRadius}
-        y={iconCenterY - iconBgRadius}
-        width={iconBgRadius * 2}
-        height={iconBgRadius * 2}
-        fill="#ffffff"
-        data-element-type="shape"
-      />,
+    const iconFillId = `icon-fill-${index}`;
+    const iconBorderId = `icon-border-${index}`;
+    const iconShadowId = `icon-shadow-${index}`;
+
+    defsElements.push(
+      <linearGradient id={iconFillId} x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor={itemColor} />
+        <stop
+          offset="100%"
+          stopColor={tinycolor(itemColor).lighten(30).setAlpha(0.4).toRgbString()}
+        />
+      </linearGradient>,
     );
 
-    // 添加内层主题色圆形
+    defsElements.push(
+      <linearGradient id={iconBorderId} x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="white" stopOpacity={0} />
+        <stop offset="100%" stopColor="white" stopOpacity={0.6} />
+      </linearGradient>,
+    );
+
+    defsElements.push(
+      <filter id={iconShadowId} x="-50%" y="-50%" width="200%" height="200%">
+        <feFlood flood-color="black" result="flood" />
+        <feComposite
+          in="flood"
+          in2="SourceAlpha"
+          operator="out"
+          result="inverse"
+        />
+        <feGaussianBlur in="inverse" stdDeviation="5.86" result="blurred" />
+        <feOffset in="blurred" dx="0" dy="2.34" result="offset" />
+        <feComposite
+          in="offset"
+          in2="SourceAlpha"
+          operator="in"
+          result="shadow-mask"
+        />
+        <feFlood flood-color={itemColor} result="shadow-color" />
+        <feComposite
+          in="shadow-color"
+          in2="shadow-mask"
+          operator="in"
+          result="shadow"
+        />
+        <feMerge>
+          <feMergeNode in="SourceGraphic" />
+          <feMergeNode in="shadow" />
+        </feMerge>
+      </filter>,
+    );
+
+    const iconEffectiveRadius = iconBgRadius - 1.4;
+
+    // 添加统一的图标容器圆（包含背景、边框、内阴影）
     iconElements.push(
       <Ellipse
-        x={iconCenterX - iconRadius}
-        y={iconCenterY - iconRadius}
-        width={iconRadius * 2}
-        height={iconRadius * 2}
-        fill={itemColor}
+        x={iconCenterX - iconEffectiveRadius}
+        y={iconCenterY - iconEffectiveRadius}
+        width={iconEffectiveRadius * 2}
+        height={iconEffectiveRadius * 2}
+        fill={`url(#${iconFillId})`}
+        stroke={`url(#${iconBorderId})`}
+        strokeWidth={2.8}
+        opacity={0.5}
+        filter={`url(#${iconShadowId})`}
         data-element-type="shape"
       />,
     );
@@ -356,6 +428,7 @@ export const SequenceCircular: ComponentType<SequenceCircularProps> = (
     >
       {titleContent}
       <Group>
+        <Defs>{defsElements}</Defs>
         <Group>{arcElements}</Group>
         <Group>{iconElements}</Group>
         <ItemsGroup>{itemElements}</ItemsGroup>
