@@ -12,7 +12,6 @@ export interface UnderlineTextProps extends BaseItemProps {
   gap?: number;
 }
 
-const underlineWidth = 80;
 const underlineHeight = 3;
 
 export const UnderlineText: ComponentType<UnderlineTextProps> = (props) => {
@@ -23,7 +22,7 @@ export const UnderlineText: ComponentType<UnderlineTextProps> = (props) => {
 
   // 获取各元素的尺寸
   const labelBounds = getElementBounds(
-    <ItemLabel indexes={indexes} fontSize={18} fontWeight="bold" width={width}>
+    <ItemLabel indexes={indexes} fontSize={18} fontWeight="bold">
       {datum.label}
     </ItemLabel>,
   );
@@ -56,6 +55,7 @@ export const UnderlineText: ComponentType<UnderlineTextProps> = (props) => {
         : 'left';
 
   // 下划线位置（受 positionH 控制）
+  const underlineWidth = labelBounds.width / 2;
   const underlineX =
     positionH === 'center'
       ? (width - underlineWidth) / 2
@@ -107,6 +107,8 @@ export const UnderlineText: ComponentType<UnderlineTextProps> = (props) => {
           height={underlineHeight}
           fill={`url(#${gradientId})`}
           opacity={0.5}
+          rx={2}
+          ry={2}
           data-element-type="shape"
         />
       )}
@@ -120,7 +122,7 @@ export const UnderlineText: ComponentType<UnderlineTextProps> = (props) => {
           y={descY}
           alignHorizontal={alignHorizontal}
           wordWrap={true}
-          fill={themeColors.colorText}
+          fill={themeColors.colorTextSecondary}
         >
           {datum.desc}
         </ItemDesc>
