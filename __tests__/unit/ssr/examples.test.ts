@@ -14,14 +14,16 @@ vi.mock('../../../src/utils/fetch.ts', async (importOriginal) => {
   return {
     ...actual,
     fetchWithCache: vi.fn().mockImplementation((url, init) => {
-      if (typeof url === 'string' && url.includes('/api/open/v1/icon')) {
+      if (
+        typeof url === 'string' &&
+        url.includes('/api/v1/infographic/icon')
+      ) {
         return Promise.resolve({
           ok: true,
           json: async () => ({
-            status: true,
-            data: {
-              data: [url.includes('plane') ? plane : earth],
-            },
+            success: true,
+            data: [url.includes('plane') ? plane : earth],
+            message: 'success',
           }),
         });
       }
