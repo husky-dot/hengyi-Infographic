@@ -105,7 +105,6 @@ export const SequenceCircular: ComponentType<SequenceCircularProps> = (
     innerRadius = 120,
     itemDistance = 310,
     gapAngle = 5,
-    iconRadius = 34,
     iconBgRadius = 46,
     iconSize = 36,
   } = props;

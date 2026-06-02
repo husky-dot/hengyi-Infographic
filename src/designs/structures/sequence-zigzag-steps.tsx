@@ -1,5 +1,5 @@
 import type { ComponentType, JSXElement } from '../../jsx';
-import { Defs, Ellipse, getElementBounds, Group, Path } from '../../jsx';
+import { Defs, getElementBounds, Group, Path } from '../../jsx';
 import {
   BtnAdd,
   BtnRemove,
@@ -9,7 +9,7 @@ import {
   ShapesGroup,
 } from '../components';
 import { FlexLayout } from '../layouts';
-import { getColorPrimary, getPaletteColor, getThemeColors } from '../utils';
+import { getColorPrimary, getPaletteColor } from '../utils';
 import { registerStructure } from './registry';
 import type { BaseStructureProps } from './types';
 
@@ -137,10 +137,6 @@ export const SequenceZigzagSteps: ComponentType<SequenceZigzagStepsProps> = (
     const decoX = Math.max(0, cx - DECO_OFFSET_X);
     const decoY = Math.max(0, cy - DECO_OFFSET_Y);
 
-    const { colorPrimaryBg } = getThemeColors({
-      colorPrimary: currentColor,
-    });
-    
     // 生成唯一 ID
     const gradientSideId = `zigzag-gradient-side-${index}`;
     const gradientTopFillId = `zigzag-gradient-top-fill-${index}`;
